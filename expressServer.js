@@ -42,7 +42,24 @@ app.delete('/tasks',(req,res)=>{
   });
   res.json(tasks);
 });
-
+app.patch('/tasks/:id/:isComplete',(req,res)=>{
+  const {id,isComplete}=req.params;
+  let flag=0;
+  tasks=tasks.map(task=>{
+    if(task.taskId===parseInt(id) ){
+      flag=1;
+      return {
+        'taskId': task.taskId,
+        'isComplete':isComplete,
+        'taskName':task.taskName
+      };
+    }else{
+      return task;
+    }
+  });
+  flag===1 ? res.status(201):res.status(404); 
+    
+});
 app.listen(process.env.PORT || 3000, ()=> {
   console.log('server started on port 3000');
 });
