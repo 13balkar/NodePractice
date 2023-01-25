@@ -34,6 +34,14 @@ app.put('/tasks',(req,res)=>{
   });
   flag===1 ? res.status(201):res.status(404); 
 });
+app.delete('/tasks',(req,res)=>{
+  tasks=tasks.filter(task=>{
+    if(!task.isComplete){
+      return task;
+    }
+  });
+  res.json(tasks);
+});
 
 app.listen(process.env.PORT || 3000, ()=> {
   console.log('server started on port 3000');
