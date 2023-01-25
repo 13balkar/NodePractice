@@ -18,6 +18,22 @@ app.post('/tasks', (req, res) => {
   tasks.push(task);
   res.status(201).json(task).end();
 });
+app.put('/tasks',(req,res)=>{
+  let flag=0;
+  tasks=tasks.map(task=>{
+    if(task.taskId===parseInt(req.body.taskId) ){
+      flag=1;
+      return {
+        'taskId': req.body.taskId,
+        'isComplete':req.body.isComplete,
+        'taskName':req.body.taskName
+      };
+    }else{
+      return task;
+    }
+  });
+  flag===1 ? res.status(201):res.status(404); 
+});
 
 app.listen(process.env.PORT || 3000, ()=> {
   console.log('server started on port 3000');
