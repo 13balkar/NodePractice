@@ -8,6 +8,19 @@ let counter = 1;
 app.get('/tasks', (req, res) => {
   res.json(tasks);
 });
+app.get('/tasks/:id',(req,res)=>{
+  const id=parseInt(req.params.id);
+  let flag=0;
+  tasks.forEach(task=>{
+    if(task.taskId===id){
+      flag=1;
+      res.json(task);
+    }
+  });
+  if(!flag){
+    res.send('Do not exists');
+  }
+});
 app.post('/tasks', (req, res) => {
   let task = {
     'taskId': counter,
