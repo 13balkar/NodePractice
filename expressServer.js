@@ -8,6 +8,16 @@ let counter = 1;
 app.get('/tasks', (req, res) => {
   res.json(tasks);
 });
+app.post('/tasks', (req, res) => {
+  let task = {
+    'taskId': counter,
+    'isComplete': false,
+    'taskName':req.body.taskName 
+  };
+  counter+=1;
+  tasks.push(task);
+  res.status(201).json(task).end();
+});
 
 app.listen(process.env.PORT || 3000, ()=> {
   console.log('server started on port 3000');
