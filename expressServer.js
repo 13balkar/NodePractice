@@ -5,74 +5,84 @@ app.use(express.urlencoded({extended:true}));
 
 let tasks = [];
 let counter = 1;
-app.get('/tasks', (req, res) => {
-  res.json(tasks);
-});
-app.get('/tasks/:id',(req,res)=>{
-  const id=parseInt(req.params.id);
-  let flag=0;
-  tasks.forEach(task=>{
-    if(task.taskId===id){
-      flag=1;
-      res.json(task);
+
+
+app.route('/tasks')
+
+  .get((req, res) => {
+    res.status(200).json(tasks);
+  })
+
+  .post( (req, res) => {
+    const task = {
+      'taskId': counter,
+      'isComplete': false,
+      ...req.body 
+    };
+    counter+=1;
+    tasks.push(task);
+    res.status(201).json(task).end();
+  })
+  
+  .put((req,res)=>{
+    const index=tasks.findIndex(task=> task.taskId===parseInt(req.body.taskId));
+    if(index===-1){
+      res.status(404).send('Not Found');
+    }else{
+      tasks[index]={...req.body};
+      res.status(200).json(tasks[index]);
     }
+    
+  })
+  
+  .delete((req,res)=>{
+    tasks=tasks.filter(task=>{
+      if(!task.isComplete){
+        return task;
+      }
+    });
+    res.status(200).json(tasks);
   });
-  if(!flag){
-    res.send('Do not exists');
+
+
+app.get('/tasks/:code',(req,res)=>{
+  let {code}=req.params;
+  switch(code){
+  case 'complete':{
+    res.status(200).json(tasks.filter(task=> task.isComplete));
+    break;
+  }
+  case 'incomplete':{
+    res.status(200).json(tasks.filter(task=> task.isComplete===false));
+    break;
+  }
+  default:{
+    if(!isNaN(code)){
+      const index=tasks.findIndex(task=> task.taskId===parseInt(code));
+      if(index===-1){
+        res.status(404).send('Not Found');
+      }else{
+        res.status(200).json(tasks[index]);
+      }
+    }else{
+      res.status(400).send('Invalid Request');
+    }
+  }
   }
 });
-app.post('/tasks', (req, res) => {
-  let task = {
-    'taskId': counter,
-    'isComplete': false,
-    'taskName':req.body.taskName 
-  };
-  counter+=1;
-  tasks.push(task);
-  res.status(201).json(task).end();
-});
-app.put('/tasks',(req,res)=>{
-  let flag=0;
-  tasks=tasks.map(task=>{
-    if(task.taskId===parseInt(req.body.taskId) ){
-      flag=1;
-      return {
-        'taskId': req.body.taskId,
-        'isComplete':req.body.isComplete,
-        'taskName':req.body.taskName
-      };
-    }else{
-      return task;
-    }
-  });
-  flag===1 ? res.status(201):res.status(404); 
-});
-app.delete('/tasks',(req,res)=>{
-  tasks=tasks.filter(task=>{
-    if(!task.isComplete){
-      return task;
-    }
-  });
-  res.json(tasks);
-});
+
 app.patch('/tasks/:id/:isComplete',(req,res)=>{
   const {id,isComplete}=req.params;
-  let flag=0;
-  tasks=tasks.map(task=>{
-    if(task.taskId===parseInt(id) ){
-      flag=1;
-      return {
-        'taskId': task.taskId,
-        'isComplete':isComplete,
-        'taskName':task.taskName
-      };
-    }else{
-      return task;
-    }
-  });
-  flag===1 ? res.status(201):res.status(404); 
-    
+  const index=tasks.findIndex(task=> task.taskId===parseInt(id));
+  if(index===-1){
+    res.status(404).send('Not Found');
+  }else{
+    tasks[index].isComplete=isComplete;
+    res.status(200).json(tasks[index]);
+  }
 });
+    
+
 app.listen(process.env.PORT || 3000, ()=> {
   console.log('server started on port 3000');
 });
