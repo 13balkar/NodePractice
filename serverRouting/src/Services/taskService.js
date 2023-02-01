@@ -1,48 +1,54 @@
 const { Task } = require('../../database/models');
+const HttpErrors = require('../../Errors/httpErrors');
+
 
 const getTasks = () => {
   const tasks = Task.findAll();
-  if (!tasks)
-    throw new Error('No tasks found');
+  if (tasks.length === 0)
+    throw new HttpErrors('Empty list of tasks.', 404);
   return tasks;
 };
 
 const getTask = async (code) => {
   const tasks = await Task.findAll(code === 'complete' ? { where: { isComplete: true } } : code === 'incomplete' ? { where: { isComplete: false } } : { where: { id: parseInt(code) } });
-  if (!tasks)
-    throw new Error(`No tasks found for id  ${code}`);
+  if (tasks.length === 0)
+    throw new HttpErrors('Task not found.', 404);
   return tasks;
 };
 
 const postTask = async (task) => {
   const newTask = await Task.create({ ...task, isComplete: false });
-  if (!newTask) {
-    throw new Error('Error creating task');
-  }
   return newTask;
 };
 
-const putTask = (taskUpdate) => {
-  Task.update({ ...taskUpdate }, { where: { id: taskUpdate.id } });
-  const updatedTask = Task.findAll({ where: { id: taskUpdate.id } });
-  if (!updatedTask) {
-    throw new Error('Error updating task');
+const putTask = async (taskUpdate) => {
+  const status = await Task.update({ ...taskUpdate }, { where: { id: taskUpdate.id } });
+  if (status[0] === 0) {
+    throw new HttpErrors('Task not found.', 404);
+  } else {
+    const updatedTask = await Task.findAll({ where: { id: taskUpdate.id } });
+    return updatedTask;
   }
-  return updatedTask;
 };
 
 const deleteTasks = async () => {
-  await Task.destroy({ where: { isComplete: true } });
-  return getTasks();
+  const status = await Task.destroy({ where: { isComplete: true } });
+  if (status === 0) {
+    throw new HttpErrors({ 'message': 'No task to delete' }, 404);
+  } else {
+    return { message: `${status} tasks deleted` };
+  }
 };
 
-const patchTask = (taskId, isComplete) => {
-  Task.update({ isComplete: isComplete }, { where: { id: taskId } });
-  const updatedTask = Task.findAll({ where: { id: taskId } });
-  if (!updatedTask) {
-    throw new Error('Error updating task');
+
+const patchTask = async (taskId, isComplete) => {
+  const status = await Task.update({ isComplete: isComplete }, { where: { id: parseInt(taskId) } });
+  if (status[0] === 0) {
+    throw new HttpErrors('Task not found', 404);
+  } else {
+    const updatedTask = await Task.findAll({ where: { id: taskId } });
+    return updatedTask;
   }
-  return updatedTask;
 
 };
 

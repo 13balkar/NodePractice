@@ -1,9 +1,9 @@
 const express = require('express');
-const { getTasks, getTask, postTask, putTask, deleteTasks, patchTask } = require('../Controllers/taskController');
+const { getTasks, postTask, putTask, deleteTasks, patchTask } = require('../Controllers/taskController');
 const taskRouter = express.Router();
 
 taskRouter.get('/', getTasks);
-taskRouter.get('/:code', getTask);
+taskRouter.get('/:code', getTasks);
 taskRouter.post('/', postTask);
 taskRouter.put('/', putTask);
 taskRouter.delete('/', deleteTasks);
