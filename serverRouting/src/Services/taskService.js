@@ -2,8 +2,8 @@ const { Task } = require('../../database/models');
 const HttpErrors = require('../../Errors/httpErrors');
 
 
-const getTasks = () => {
-  const tasks = Task.findAll();
+const getTasks = async () => {
+  const tasks = await Task.findAll();
   if (tasks.length === 0)
     throw new HttpErrors('Empty list of tasks.', 404);
   return tasks;
@@ -34,9 +34,9 @@ const putTask = async (taskUpdate) => {
 const deleteTasks = async () => {
   const status = await Task.destroy({ where: { isComplete: true } });
   if (status === 0) {
-    throw new HttpErrors({ 'message': 'No task to delete' }, 404);
+    throw new HttpErrors('No task to delete', 404);
   } else {
-    return { message: `${status} tasks deleted` };
+    return status;
   }
 };
 
