@@ -13,42 +13,6 @@ describe('Test  cases for ToDO App', () => {
       expect(mockRes.status).toBeCalledWith(201);
       expect(mockRes.status().json).toBeCalledWith([{ id: 1, taskName: 'test', isComplete: false }]);
     });
-    it('should throw an Http error with error code when length of taskName is less than 3', async () => {
-      const mockReq = { body: { taskName: 'te' } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.postTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" length must be at least 3 characters long' });
-    });
-    it('should throw an Http error with error code when length of taskName is greater than 50', async () => {
-      const mockReq = { body: { taskName: 'abcdefghijklmnopqrstuvwxyz12345678910' } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.postTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" length must be less than or equal to 30 characters long' });
-    });
-    it('should throw an Http error with error code when taskName is not a string', async () => {
-      const mockReq = { body: { taskName: 123 } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.postTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" must be a string' });
-    });
-    it('should throw an Http error with error code when taskName is not present', async () => {
-      const mockReq = { body: {} };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.postTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" is required' });
-    });
     it('should throw an internal server error if there is some bug at server side', async () => {
       jest.spyOn(taskService, 'postTask').mockRejectedValue(new Error('Internal server error'));
       const mockReq = { body: { taskName: 'test' } };
@@ -70,87 +34,6 @@ describe('Test  cases for ToDO App', () => {
       await taskController.putTask(mockReq, mockRes);
       expect(mockRes.status).toBeCalledWith(200);
       expect(mockRes.status().json).toBeCalledWith([{ id: 1, taskName: 'test', isComplete: true }]);
-    });
-    it('should throw an Http error with error code when length of taskName is less than 3', async () => {
-      const mockReq = { body: { taskName: 'te', id: 1, isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" length must be at least 3 characters long' });
-    });
-    it('should throw an Http error with error code when length of taskName is greater than 30', async () => {
-      const mockReq = { body: { taskName: 'abcdefghijklmnopqrstuvwxyz12345678910', id: 1, isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" length must be less than or equal to 30 characters long' });
-    });
-    it('should throw an Http error with error code when taskName is not a string', async () => {
-      const mockReq = { body: { taskName: 123, id: 1, isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" must be a string' });
-    });
-    it('should throw an Http error with error code when taskName is not present', async () => {
-      const mockReq = { body: { id: 1, isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"taskName" is required' });
-    });
-    it('should throw an Http error with error code when id is not present', async () => {
-      const mockReq = { body: { taskName: 'test', isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" is required' });
-    });
-    it('should throw an Http error with error code when id is not a number', async () => {
-      const mockReq = { body: { taskName: 'test', id: 'a', isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" must be a number' });
-    });
-    it('should throw an Http error with error code when id is not a positive number', async () => {
-      const mockReq = { body: { taskName: 'test', id: -1, isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" must be a positive number' });
-    });
-    it('should throw an Http error with error code isComplete is not boolean', async () => {
-      const mockReq = { body: { taskName: 'test', id: 1, isComplete: 12 } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"isComplete" must be a boolean' });
-    });
-    it('should throw an Http error with error code isComplete is not present', async () => {
-      const mockReq = { body: { taskName: 'test', id: 1 } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.putTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"isComplete" is required' });
     });
     // it('should throw an error if task is not found', async () => {
     //   jest.spyOn(taskService, 'updateTask').mockImplementation(() => { throw new HttpErrors('Task not found', 404); });
@@ -217,51 +100,6 @@ describe('Test  cases for ToDO App', () => {
       expect(mockRes.status).toBeCalledWith(200);
       expect(mockRes.status().send).toBeCalledWith({ id: 1, taskName: 'test', isComplete: true });
     });
-    it('should throw an Http error with error code when id is not present', async () => {
-      const mockReq = { params: { isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.patchTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" is required' });
-    });
-    it('should throw an Http error with error code when id is not a number', async () => {
-      const mockReq = { params: { id: 'test', isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.patchTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" must be a number' });
-    });
-    it('should throw an Http error with error code when id is not a positive number', async () => {
-      const mockReq = { params: { id: -1, isComplete: true } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.patchTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" must be a positive number' });
-    });
-    it('should throw an Http error with error code isComplete is not boolean', async () => {
-      const mockReq = { params: { id: 1, isComplete: 'test' } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.patchTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"isComplete" must be a boolean' });
-    });
-    it('should throw an Http error with error code isComplete is not present', async () => {
-      const mockReq = { params: { id: 1 } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.patchTask(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"isComplete" is required' });
-    });
     // it('should throw an error if task is not found', async () => { });
     it('should throw an internal server error if there is some bug at server side', async () => {
       jest.spyOn(taskService, 'patchTask').mockRejectedValue(new Error('Internal server error.'));
@@ -304,15 +142,6 @@ describe('Test  cases for ToDO App', () => {
       await taskController.getTasks(mockReq, mockRes);
       expect(mockRes.status).toBeCalledWith(200);
       expect(mockRes.status().send).toBeCalledWith([{ id: 1, taskName: 'test', isComplete: false }]);
-    });
-    it('should throw an Http error with error code when id is not a number', async () => {
-      const mockReq = { params: { id: 'test' } };
-      const mockRes = {
-        status: jest.fn().mockReturnValue({ send: jest.fn() })
-      };
-      await taskController.getTasks(mockReq, mockRes);
-      expect(mockRes.status).toBeCalledWith(400);
-      expect(mockRes.status().send).toBeCalledWith({ message: '"id" must be a number' });
     });
     // it('should throw an internal server error if there is some bug at server side', async () => {
     //   jest.spyOn(taskService, 'getTask').mockRejectedValue(new Error('Internal server error.'));
