@@ -1,6 +1,6 @@
 const { user } = require('../../database/models');
 const httpError = require('../../errors/httpErrors');
-const { encryptPassword, comparePassword, generateToken, validateToken } = require('../utils/authUtil');
+const { encryptPassword, comparePassword, generateToken, validateToken, storeToken } = require('../utils/authUtil');
 
 const create = async (userName, password) => {
   const userExists = await user.findOne({ where: { userName: userName } });
@@ -21,7 +21,9 @@ const login = async (userName, password) => {
   }
   else {
     if (await comparePassword(password, userExists.password)) {
-      return generateToken(userName);
+      const token = await generateToken(userName);
+      storeToken(token, userExists.userName);
+      return ({ token });
     }
     else
       throw new httpError('Invalid Password', 401);
@@ -30,7 +32,7 @@ const login = async (userName, password) => {
 };
 
 const validateHandler = async (token) => {
-  const validatedToken = validateToken(token);
+  const validatedToken = await validateToken(token);
   if (!validatedToken) {
     throw new httpError('Invalid Token', 401);
   }

@@ -19,7 +19,7 @@ const userValidator = (req, res, next) => {
 };
 
 const tokenValidator = (req, res, next) => {
-  const token = req.body.token;
+  const token = req.headers.token;
   const { error } = tokenSchema.validate({ token });
   if (error) {
     console.log(error);

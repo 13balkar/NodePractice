@@ -111,7 +111,7 @@ const tokenValidator = async (req, res, next) => {
       throw new HttpErrors(error.details[0].message, 400);
     }
     else {
-      const verifyToken = await axios.post('http://localhost:4000/token/validate', { token });
+      const verifyToken = await axios.post('http://localhost:4000/token/validate', {}, { headers: { token } });
       if (verifyToken)
         next();
       else

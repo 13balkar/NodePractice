@@ -34,11 +34,12 @@ const loginUser = async (req, res) => {
 
 const validateHandler = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { token } = req.headers;
     const user = await services.validateHandler(token);
     res.status(200).json(user);
   }
   catch (err) {
+    console.log(err);
     if (err instanceof httpError) {
       res.status(err.code).json(err.message);
     }

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const redis = require('./redisUtil');
 const encryptPassword = async (password) => {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -17,14 +18,26 @@ const generateToken = async (userName) => {
     userName: userName,
     time: Date()
   };
-  return await jwt.sign(data, key);
+  return jwt.sign(data, key);
 };
 
-const validateToken = (token) => {
+const validateToken = async (token) => {
   const key = process.env.JWT_SECRET_KEY;
   const verification = jwt.verify(token, key, (err, decoded) => {
     return err ? false : decoded;
   });
-  return verification;
+  if (!verification) return false;
+  const redisCheck = await redis.get(verification.userName);
+  if (redisCheck !== token) {
+    return false;
+  } else {
+    return verification;
+  }
 };
-module.exports = { encryptPassword, comparePassword, generateToken, validateToken };
+
+const storeToken = async (token, userName) => {
+  const redisClient = redis;
+  await redisClient.set(userName, token, 'EX', 3600);
+};
+
+module.exports = { encryptPassword, comparePassword, generateToken, validateToken, storeToken };
