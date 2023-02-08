@@ -19,8 +19,10 @@ const userValidator = (req, res, next) => {
 };
 
 const tokenValidator = (req, res, next) => {
-  const { error } = tokenSchema.validate(req.body);
+  const token = req.body.token;
+  const { error } = tokenSchema.validate({ token });
   if (error) {
+    console.log(error);
     return res.status(400).json(error.details[0].message);
   }
   else {

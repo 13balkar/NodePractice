@@ -8,7 +8,7 @@ const createUser = async (req, res) => {
   }
   catch (err) {
     if (err instanceof httpError) {
-      res.status(err.status).json(err.message);
+      res.status(err.code).json(err.message);
     }
     else {
       res.status(500).json('Internal server error');
@@ -24,7 +24,7 @@ const loginUser = async (req, res) => {
   }
   catch (err) {
     if (err instanceof httpError) {
-      res.status(err.status).json(err.message);
+      res.status(err.code).json(err.message);
     }
     else {
       res.status(500).json('Internal server error');
@@ -40,7 +40,7 @@ const validateHandler = async (req, res) => {
   }
   catch (err) {
     if (err instanceof httpError) {
-      res.status(err.status).json(err.message);
+      res.status(err.code).json(err.message);
     }
     else {
       res.status(500).json('Internal server error');

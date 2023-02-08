@@ -7,7 +7,8 @@ const encryptPassword = async (password) => {
 };
 
 const comparePassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword);
+  const comparison = await bcrypt.compare(password, hashedPassword);
+  return comparison;
 };
 
 const generateToken = async (userName) => {
@@ -19,8 +20,11 @@ const generateToken = async (userName) => {
   return await jwt.sign(data, key);
 };
 
-const validateToken = async (token) => {
+const validateToken = (token) => {
   const key = process.env.JWT_SECRET_KEY;
-  return await jwt.verify(token, key);
+  const verification = jwt.verify(token, key, (err, decoded) => {
+    return err ? false : decoded;
+  });
+  return verification;
 };
 module.exports = { encryptPassword, comparePassword, generateToken, validateToken };

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { userValidator } = require('../middleware/auth.validator');
+const { userValidator, tokenValidator } = require('../middleware/auth.validator');
 const { createUser, loginUser, validateHandler } = require('../controller/authController');
 
 router.post('/user/create', userValidator, createUser);
 router.post('/user/login', userValidator, loginUser);
-router.post('/token/validate', validateHandler);
+router.post('/token/validate', tokenValidator, validateHandler);
 router.get('/', (req, res) => {
   res.status(200).json({
     addUser: {

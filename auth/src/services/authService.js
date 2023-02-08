@@ -5,7 +5,7 @@ const { encryptPassword, comparePassword, generateToken, validateToken } = requi
 const create = async (userName, password) => {
   const userExists = await user.findOne({ where: { userName: userName } });
   if (userExists) {
-    throw new httpError(409, 'User already exists');
+    throw new httpError('User already exists', 409);
   }
   else {
     password = await encryptPassword(password);
@@ -17,26 +17,30 @@ const create = async (userName, password) => {
 const login = async (userName, password) => {
   const userExists = await user.findOne({ where: { userName: userName } });
   if (!userExists) {
-    throw new httpError(404, 'User not found');
+    throw new httpError('User not found', 404);
   }
   else {
-    const hashedPassword = await encryptPassword(password);
-    if (comparePassword(password, hashedPassword)) {
+    if (await comparePassword(password, userExists.password)) {
       return generateToken(userName);
     }
     else
-      throw new httpError(401, 'Invalid Password');
+      throw new httpError('Invalid Password', 401);
 
   }
 };
 
 const validateHandler = async (token) => {
-  const validatedToken = await validateToken(token);
-  const userExists = await user.findOne({ where: { userName: validatedToken.userName } });
-  if (!userExists) {
-    throw new httpError(404, 'User not found');
-  } else {
-    return userExists;
+  const validatedToken = validateToken(token);
+  if (!validatedToken) {
+    throw new httpError('Invalid Token', 401);
+  }
+  else {
+    const userExists = await user.findOne({ where: { userName: validatedToken.userName } });
+    if (!userExists) {
+      throw new httpError('User not found', 404);
+    } else {
+      return userExists;
+    }
   }
 };
 module.exports = { create, login, validateHandler };

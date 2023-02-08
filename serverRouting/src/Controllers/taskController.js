@@ -6,8 +6,6 @@ const HttpErrors = require('../../Errors/httpErrors');
 
 const getTask = async (req, res) => {
   const code = req.params.code;
-  console.log(code);
-
   try {
 
     const tasks = await taskService.getTask(code);
