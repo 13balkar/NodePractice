@@ -21,17 +21,17 @@ const generateToken = async (userName) => {
   return jwt.sign(data, key);
 };
 
-const validateToken = async (token) => {
+const validateToken = async (token, userName) => {
   const key = process.env.JWT_SECRET_KEY;
-  const verification = jwt.verify(token, key, (err, decoded) => {
-    return err ? false : decoded;
-  });
-  if (!verification) return false;
-  const redisCheck = await redis.get(verification.userName);
-  if (redisCheck !== token) {
+  const redisClient = redis;
+
+  const redisToken = await redisClient.get(userName);
+  if (token === redisToken) {
+    const decodedToken = jwt.verify(token, key);
+    return decodedToken;
+  }
+  else {
     return false;
-  } else {
-    return verification;
   }
 };
 

@@ -31,8 +31,8 @@ const login = async (userName, password) => {
   }
 };
 
-const validateHandler = async (token) => {
-  const validatedToken = await validateToken(token);
+const validateHandler = async (token, userName) => {
+  const validatedToken = await validateToken(token, userName);
   if (!validatedToken) {
     throw new httpError('Invalid Token', 401);
   }

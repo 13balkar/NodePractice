@@ -34,8 +34,9 @@ const loginUser = async (req, res) => {
 
 const validateHandler = async (req, res) => {
   try {
-    const { token } = req.headers;
-    const user = await services.validateHandler(token);
+    const { token, username } = req.headers;
+    console.log(username);
+    const user = await services.validateHandler(token, username);
     res.status(200).json(user);
   }
   catch (err) {

@@ -2,8 +2,13 @@ const express = require('express');
 const router = require('./src/Routes/taskRoutes');
 const { tokenValidator } = require('./src/middlewares/task.validator');
 const app = express();
-const port = 3000;
+const port = 8080;
 app.use(express.json());
+var cors = require('cors');
+var corsOptions = {
+  origin: 'http://localhost:3000',
+};
+app.use(cors(corsOptions));
 app.use(tokenValidator);
 app.use('/tasks', router);
 app.get('/', (req, res) => {
