@@ -22,7 +22,7 @@ const login = async (userName, password) => {
   else {
     if (await comparePassword(password, userExists.password)) {
       const token = await generateToken(userName);
-      storeToken(token, userExists.userName);
+      storeToken(token);
       return ({ token });
     }
     else
@@ -31,8 +31,8 @@ const login = async (userName, password) => {
   }
 };
 
-const validateHandler = async (token, userName) => {
-  const validatedToken = await validateToken(token, userName);
+const validateHandler = async (token) => {
+  const validatedToken = await validateToken(token);
   if (!validatedToken) {
     throw new httpError('Invalid Token', 401);
   }
