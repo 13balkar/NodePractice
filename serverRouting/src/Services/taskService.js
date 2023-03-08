@@ -4,8 +4,8 @@ const HttpErrors = require('../../Errors/httpErrors');
 
 const getTasks = async () => {
   const tasks = await Task.findAll();
-  if (tasks.length === 0)
-    throw new HttpErrors('Empty list of tasks.', 404);
+  // if (tasks.length === 0)
+  //   throw new HttpErrors('Empty list of tasks.', 404);
   return tasks;
 };
 

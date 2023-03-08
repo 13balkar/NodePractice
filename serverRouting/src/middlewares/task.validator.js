@@ -105,13 +105,13 @@ const patchTaskValidator = (req, res, next) => {
 const tokenValidator = async (req, res, next) => {
   try {
     const token = req.headers.token;
-    const userName = req.headers.username;
+    // const userName = req.headers.username;
     const { error } = tokenSchema.validate({ token });
     if (error) {
       throw new HttpErrors(error.details[0].message, 400);
     }
     else {
-      const verifyToken = await axios.post('http://localhost:4000/token/validate', {}, { headers: { token, userName } });
+      const verifyToken = await axios.post('http://localhost:4000/token/validate', {}, { headers: { token } });
       if (verifyToken)
         next();
       else
