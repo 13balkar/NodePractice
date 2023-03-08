@@ -22,22 +22,24 @@ const generateToken = async (userName) => {
 };
 
 const validateToken = async (token) => {
+
   const key = process.env.JWT_SECRET_KEY;
-  const verification = jwt.verify(token, key, (err, decoded) => {
-    return err ? false : decoded;
-  });
-  if (!verification) return false;
-  const redisCheck = await redis.get(verification.userName);
-  if (redisCheck !== token) {
+  const redisClient = redis;
+
+  const redisToken = await redisClient.get(token);
+  if (redisToken !== undefined) {
+    const decodedToken = jwt.verify(token, key);
+    return decodedToken;
+  }
+  else {
     return false;
-  } else {
-    return verification;
   }
 };
 
-const storeToken = async (token, userName) => {
+const storeToken = async (token) => {
   const redisClient = redis;
-  await redisClient.set(userName, token, 'EX', 3600);
+  await redisClient.set(token, token, 'EX', 3600);
+
 };
 
 module.exports = { encryptPassword, comparePassword, generateToken, validateToken, storeToken };
